@@ -1,96 +1,117 @@
 from sqlalchemy import Column, Integer, String, Float, Date, Enum, ForeignKey
-from datetime import datetime
-from enum import Enum as PyEnum
-from app.db.session import Base
+from sqlalchemy.orm import relationship, declarative_base
+from datetime import datetime, timezone
 
-
-class StatusEnum(PyEnum):
-    ON_ROAD = "on road"
-    IN_GARAGE = "in garage"
-    STALLED = "stalled"
+Base = declarative_base()
 
 
 class TimestampMixin:
-    created_at = Column(Date, default=datetime.now(), nullable=False)
+    id = Column(Integer, primary_key=True, index=True)
+    created_at = Column(
+        Date, default=datetime.now(
+            timezone.utc), nullable=False)
     updated_at = Column(
         Date,
-        default=datetime.now(),
-        nullable=False,
-        onupdate=datetime.now())
+        default=datetime.now(timezone.utc),
+        onupdate=datetime.now(timezone.utc),
+        nullable=False)
 
 
-class Driver(Base, TimestampMixin):
-    __tablename__ = "drivers"
+class User(Base, TimestampMixin):
+    __tablename__ = 'users'
+    name = Column(String(50), nullable=False)
+    email = Column(String(100), unique=True, nullable=False)
+    password = Column(String(100), nullable=False)
+    role = Column(
+        Enum(
+            'admin',
+            'manager',
+            'driver',
+            name='user_roles'),
+        nullable=False)
+    id_number = Column(String(20), unique=True, nullable=False)
+    dob = Column(Date, nullable=True)
+    phone_number = Column(String(15), nullable=True)
+    driving_license_number = Column(String(20), nullable=True)
+    location_id = Column(Integer, ForeignKey('locations.id'))
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(100), index=True)
-    id_number = Column(String(10), unique=True)
-    dob = Column(Date)
-    phone_number = Column(String(12))
-    location_id = Column(Integer, ForeignKey("locations.id"))
-
-
-class Location(Base, TimestampMixin):
-    __tablename__ = "locations"
-
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(250))
-    address = Column(String(250))
+    location = relationship("Location", back_populates="users")
+    vehicles = relationship("VehicleDriver", back_populates="user")
 
 
 class Vehicle(Base, TimestampMixin):
-    __tablename__ = "vehicles"
+    __tablename__ = 'vehicles'
+    location_id = Column(Integer, ForeignKey('locations.id'))
+    plate_number = Column(String(10), unique=True, nullable=False)
+    name = Column(String(50), nullable=True)
+    engine_capacity = Column(String(20), nullable=False)
+    buying_value = Column(Float, nullable=False)
+    projected_return_per_day = Column(Float, nullable=False)
+    status = Column(
+        Enum(
+            'on road',
+            'in garage',
+            'stalled',
+            name='vehicle_statuses'),
+        nullable=False)
 
-    id = Column(Integer, primary_key=True, index=True)
-    location_id = Column(Integer, ForeignKey("locations.id"))
-    plate_number = Column(String(20), unique=True)
-    name = Column(String(250))
-    engine_capacity = Column(String(20))
-    buying_value = Column(Float)
-    projected_return_per_day = Column(Float)
-    status = Column(Enum(StatusEnum), default=StatusEnum.ON_ROAD)
+    location = relationship("Location", back_populates="vehicles")
+    drivers = relationship("VehicleDriver", back_populates="vehicle")
+    maintenances = relationship("Maintenance", back_populates="vehicle")
+    remittances = relationship("Remittance", back_populates="vehicle")
+    routes = relationship("VehicleRoute", back_populates="vehicle")
 
 
-class Maintenance(Base, TimestampMixin):
-    __tablename__ = "maintenances"
+class Location(Base, TimestampMixin):
+    __tablename__ = 'locations'
+    name = Column(String(50), nullable=False)
+    address = Column(String(100), nullable=True)
 
-    id = Column(Integer, primary_key=True, index=True)
-    vehicle_id = Column(Integer, ForeignKey("vehicles.id"))
-    cost = Column(Float)
-    description = Column(String(250))
-    date = Column(Date)
-
-
-class Remittance(Base, TimestampMixin):
-    __tablename__ = "remittances"
-
-    id = Column(Integer, primary_key=True, index=True)
-    amount = Column(Float)
-    vehicle_id = Column(Integer, ForeignKey("vehicles.id"))
-    date = Column(Date)
+    users = relationship("User", back_populates="location")
+    vehicles = relationship("Vehicle", back_populates="location")
 
 
 class Route(Base, TimestampMixin):
-    __tablename__ = "routes"
+    __tablename__ = 'routes'
+    name = Column(String(50), nullable=False)
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(250))
+    vehicles = relationship("VehicleRoute", back_populates="route")
 
 
 class VehicleDriver(Base, TimestampMixin):
-    __tablename__ = "vehicle_drivers"
+    __tablename__ = 'vehicle_drivers'
+    user_id = Column(Integer, ForeignKey('users.id'))
+    vehicle_id = Column(Integer, ForeignKey('vehicles.id'))
+    start_date = Column(Date, nullable=False)
+    end_date = Column(Date, nullable=True)
 
-    id = Column(Integer, primary_key=True, index=True)
-    driver_id = Column(Integer, ForeignKey("drivers.id"))
-    start_date = Column(Date)
-    end_date = Column(Date)
-    vehicle_id = Column(Integer, ForeignKey("vehicles.id"))
+    user = relationship("User", back_populates="vehicles")
+    vehicle = relationship("Vehicle", back_populates="drivers")
+
+
+class Maintenance(Base, TimestampMixin):
+    __tablename__ = 'maintenances'
+    vehicle_id = Column(Integer, ForeignKey('vehicles.id'))
+    cost = Column(Float, nullable=False)
+    description = Column(String(255), nullable=False)
+    date = Column(Date, nullable=False)
+
+    vehicle = relationship("Vehicle", back_populates="maintenances")
+
+
+class Remittance(Base, TimestampMixin):
+    __tablename__ = 'remittances'
+    vehicle_id = Column(Integer, ForeignKey('vehicles.id'))
+    amount = Column(Float, nullable=False)
+
+    vehicle = relationship("Vehicle", back_populates="remittances")
 
 
 class VehicleRoute(Base, TimestampMixin):
-    __tablename__ = "vehicle_routes"
+    __tablename__ = 'vehicle_routes'
+    vehicle_id = Column(Integer, ForeignKey('vehicles.id'))
+    route_id = Column(Integer, ForeignKey('routes.id'))
+    date_assigned = Column(Date, nullable=False)
 
-    id = Column(Integer, primary_key=True, index=True)
-    vehicle_id = Column(Integer, ForeignKey("vehicles.id"))
-    route_id = Column(Integer, ForeignKey("routes.id"))
-    date_assigned = Column(Date)
+    vehicle = relationship("Vehicle", back_populates="routes")
+    route = relationship("Route", back_populates="vehicles")
