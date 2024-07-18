@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, String, Float, Date, Enum, ForeignKey
-from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
 
-Base = declarative_base()
+from app.core.database import Base
 
 
 class TimestampMixin:
@@ -19,8 +19,8 @@ class TimestampMixin:
 
 class User(Base, TimestampMixin):
     __tablename__ = 'users'
-    name = Column(String(50), nullable=False)
-    email = Column(String(100), unique=True, nullable=False)
+    name = Column(String(50), nullable=True)
+    email = Column(String(100), unique=True, nullable=False, index=True)
     password = Column(String(100), nullable=False)
     role = Column(
         Enum(
@@ -103,6 +103,7 @@ class Remittance(Base, TimestampMixin):
     __tablename__ = 'remittances'
     vehicle_id = Column(Integer, ForeignKey('vehicles.id'))
     amount = Column(Float, nullable=False)
+    date = Column(Date, nullable=False)
 
     vehicle = relationship("Vehicle", back_populates="remittances")
 

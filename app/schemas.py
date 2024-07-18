@@ -26,7 +26,7 @@ class BaseSchema(BaseModel):
 
 
 class UserBase(BaseSchema):
-    name: str
+    name: Optional[str]
     email: EmailStr
     role: UserRole
     id_number: str
@@ -146,6 +146,7 @@ class MaintenanceResponse(MaintenanceBase):
 class RemittanceBase(BaseSchema):
     vehicle_id: int
     amount: float
+    date: date
 
 
 class RemittanceCreate(RemittanceBase):
