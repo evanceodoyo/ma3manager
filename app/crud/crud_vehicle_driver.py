@@ -13,7 +13,7 @@ def get_vehicle_drivers(db: Session, skip: int = 0, limit: int = 10):
 
 
 def create_vehicle_driver(db: Session, vehicle_driver: VehicleDriverCreate):
-    db_vehicle_driver = VehicleDriver(**vehicle_driver.dict())
+    db_vehicle_driver = VehicleDriver(**vehicle_driver.model_dump())
     db.add(db_vehicle_driver)
     db.commit()
     db.refresh(db_vehicle_driver)
@@ -26,7 +26,7 @@ def update_vehicle_driver(
         vehicle_driver_id: int):
     db_vehicle_driver = db.query(VehicleDriver).filter(
         VehicleDriver.id == vehicle_driver_id).first()
-    for key, value in vehicle_driver.dict().items():
+    for key, value in vehicle_driver.model_dump(exclude_unset=True).items():
         setattr(db_vehicle_driver, key, value)
     db.commit()
     db.refresh(db_vehicle_driver)

@@ -12,7 +12,7 @@ def get_remittances(db: Session, skip: int = 0, limit: int = 10):
 
 
 def create_remittance(db: Session, remittance: RemittanceCreate):
-    db_remittance = Remittance(**remittance.dict())
+    db_remittance = Remittance(**remittance.model_dump())
     db.add(db_remittance)
     db.commit()
     db.refresh(db_remittance)
@@ -25,7 +25,7 @@ def update_remittance(
         remittance_id: int):
     db_remittance = db.query(Remittance).filter(
         Remittance.id == remittance_id).first()
-    for key, value in remittance.dict().items():
+    for key, value in remittance.model_dump(exclude_unset=True).items():
         setattr(db_remittance, key, value)
     db.commit()
     db.refresh(db_remittance)

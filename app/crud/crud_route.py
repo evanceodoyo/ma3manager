@@ -12,7 +12,7 @@ def get_routes(db: Session, skip: int = 0, limit: int = 10):
 
 
 def create_route(db: Session, route: RouteCreate):
-    db_route = Route(**route.dict())
+    db_route = Route(**route.model_dump())
     db.add(db_route)
     db.commit()
     db.refresh(db_route)
@@ -21,7 +21,7 @@ def create_route(db: Session, route: RouteCreate):
 
 def update_route(db: Session, route: RouteUpdate, route_id: int):
     db_route = db.query(Route).filter(Route.id == route_id).first()
-    for key, value in route.dict().items():
+    for key, value in route.model_dump(exclude_unset=True).items():
         setattr(db_route, key, value)
     db.commit()
     db.refresh(db_route)

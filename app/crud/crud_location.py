@@ -12,7 +12,7 @@ def get_locations(db: Session, skip: int = 0, limit: int = 10):
 
 
 def create_location(db: Session, location: LocationCreate):
-    db_location = Location(**location.dict())
+    db_location = Location(**location.model_dump())
     db.add(db_location)
     db.commit()
     db.refresh(db_location)
@@ -21,7 +21,7 @@ def create_location(db: Session, location: LocationCreate):
 
 def update_location(db: Session, location: LocationUpdate, location_id: int):
     db_location = db.query(Location).filter(Location.id == location_id).first()
-    for key, value in location.dict().items():
+    for key, value in location.model_dump(exclude_unset=True).items():
         setattr(db_location, key, value)
     db.commit()
     db.refresh(db_location)
