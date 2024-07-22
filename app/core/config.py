@@ -9,7 +9,8 @@ class Settings(BaseSettings):
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./test.db")
     SECRET_KEY: str = os.getenv("SECRET_KEY", "supersecretkey")
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    TITLE: str = "Ma3Manager API"
+    ACCESS_TOKEN_EXPIRE_HOURS: int = 6
 
 
 settings = Settings()

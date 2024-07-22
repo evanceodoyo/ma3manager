@@ -20,20 +20,28 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+def create_access_token(
+        data: dict,
+        expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.now(
+            timezone.utc) + timedelta(hours=settings.ACCESS_TOKEN_EXPIRE_HOURS)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    encoded_jwt = jwt.encode(
+        to_encode,
+        settings.SECRET_KEY,
+        algorithm=settings.ALGORITHM)
     return encoded_jwt
 
 
-def decode_access_token(token: str) -> Optional[TokenData]:
+def verify_token(token: str) -> Optional[TokenData]:
     try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[
+                settings.ALGORITHM])
         email: str = payload.get("sub")
         if email is None:
             return None
@@ -43,7 +51,7 @@ def decode_access_token(token: str) -> Optional[TokenData]:
 
 
 def get_current_user(token: str) -> Optional[str]:
-    token_data = decode_access_token(token)
+    token_data = verify_token(token)
     if token_data:
         return token_data.email
     return None
