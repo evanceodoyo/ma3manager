@@ -33,7 +33,12 @@ class User(Base, TimestampMixin):
     dob = Column(Date, nullable=True)
     phone_number = Column(String(15), nullable=True)
     driving_license_number = Column(String(20), nullable=True)
-    location_id = Column(Integer, ForeignKey('locations.id'))
+    location_id = Column(
+        Integer,
+        ForeignKey(
+            'locations.id',
+            ondelete='SET NULL'),
+        nullable=True)
 
     location = relationship("Location", back_populates="users")
     vehicles = relationship("VehicleDriver", back_populates="user")
@@ -41,7 +46,12 @@ class User(Base, TimestampMixin):
 
 class Vehicle(Base, TimestampMixin):
     __tablename__ = 'vehicles'
-    location_id = Column(Integer, ForeignKey('locations.id'))
+    location_id = Column(
+        Integer,
+        ForeignKey(
+            'locations.id',
+            ondelete='SET NULL'),
+        nullable=True)
     plate_number = Column(String(10), unique=True, nullable=False)
     name = Column(String(50), nullable=True)
     engine_capacity = Column(String(20), nullable=False)
