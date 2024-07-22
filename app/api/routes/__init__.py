@@ -28,8 +28,8 @@ api_router.include_router(
 api_router.include_router(routes.router, prefix="/routes", tags=["routes"])
 api_router.include_router(
     vehicle_drivers.router,
-    prefix="/vehicle_drivers",
-    tags=["vehicle_drivers"])
+    prefix="/vehicle-drivers",
+    tags=["vehicle-drivers"])
 api_router.include_router(
     maintenances.router,
     prefix="/maintenances",
@@ -40,8 +40,8 @@ api_router.include_router(
     tags=["remittances"])
 api_router.include_router(
     vehicle_routes.router,
-    prefix="/vehicle_routes",
-    tags=["vehicle_routes"])
+    prefix="/vehicle-routes",
+    tags=["vehicle-routes"])
 # api_router.include_router(
 #     expenses_vs_earnings.router,
 #     prefix="/",
