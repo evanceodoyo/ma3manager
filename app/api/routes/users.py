@@ -26,7 +26,7 @@ def read_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
 
 
 @router.get("/{user_id}", response_model=schemas.UserResponse,
-            dependencies=[Depends(auth.admin_or_manager)])
+            dependencies=[Depends(auth.current_user_or_admin)])
 def read_user(user_id: int, db: Session = Depends(get_db)):
     db_user = crud_user.get_user(db, user_id=user_id)
     if db_user is None:
@@ -35,7 +35,7 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/{user_id}", response_model=schemas.UserResponse,
-            dependencies=[Depends(auth.admin_or_manager)])
+            dependencies=[Depends(auth.current_user_or_admin)])
 def update_user(
         user_id: int,
         user: schemas.UserUpdate,
@@ -48,7 +48,7 @@ def update_user(
 
 @router.delete("/{user_id}",
                response_model=schemas.UserResponse,
-               dependencies=[Depends(auth.admin_or_manager)])
+               dependencies=[Depends(auth.current_user_or_admin)])
 def delete_user(user_id: int, db: Session = Depends(get_db)):
     db_user = crud_user.get_user(db, user_id=user_id)
     if db_user is None:
