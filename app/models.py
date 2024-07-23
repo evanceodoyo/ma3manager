@@ -37,7 +37,7 @@ class User(Base, TimestampMixin):
             'driver',
             name='user_roles'),
         nullable=False)
-    id_number = Column(String(20), unique=True, nullable=False)
+    id_number = Column(String(20), unique=True, nullable=True)
     dob = Column(DateTime, nullable=True)
     phone_number = Column(String(15), nullable=True)
     driving_license_number = Column(String(20), nullable=True)
