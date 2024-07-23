@@ -43,7 +43,6 @@ class UserUpdate(UserCommon):
 
 
 class UserResponse(UserBase):
-    location: Optional['LocationResponse']
     id: int
     created_at: datetime
     updated_at: datetime
@@ -74,7 +73,7 @@ class VehicleUpdate(BaseSchema):
 
 
 class VehicleResponse(VehicleBase):
-    location: Optional['LocationResponse']
+    location: Optional['LocationResponse'] = None
     id: int
     created_at: datetime
     updated_at: datetime
@@ -95,8 +94,6 @@ class LocationUpdate(BaseSchema):
 
 
 class LocationResponse(LocationBase):
-    users: List['UserResponse'] = []
-    vehicles: List['VehicleResponse'] = []
     id: int
     created_at: datetime
     updated_at: datetime
@@ -140,8 +137,8 @@ class VehicleDriverUpdate(BaseSchema):
 
 
 class VehicleDriverResponse(VehicleDriverBase):
-    user: Optional[UserResponse]
-    vehicle: Optional[VehicleResponse]
+    user: Optional[UserResponse] = None
+    vehicle: Optional[VehicleResponse] = None
     id: int
     created_at: datetime
     updated_at: datetime
@@ -166,7 +163,7 @@ class MaintenanceUpdate(BaseSchema):
 
 
 class MaintenanceResponse(MaintenanceBase):
-    vehicle: Optional[VehicleResponse]
+    vehicle: Optional[VehicleResponse] = None
     id: int
     created_at: datetime
     updated_at: datetime
@@ -189,7 +186,7 @@ class RemittanceUpdate(BaseSchema):
 
 
 class RemittanceResponse(RemittanceBase):
-    vehicle: Optional[VehicleResponse]
+    vehicle: Optional[VehicleResponse] = None
     id: int
     created_at: datetime
     updated_at: datetime
@@ -212,8 +209,6 @@ class VehicleRouteUpdate(BaseSchema):
 
 
 class VehicleRouteResponse(VehicleRouteBase):
-    vehicle: Optional[VehicleResponse]
-    route: Optional[RouteResponse]
     id: int
     created_at: datetime
     updated_at: datetime

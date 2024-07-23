@@ -36,6 +36,7 @@ class User(Base, TimestampMixin):
             'manager',
             'driver',
             name='user_roles'),
+        default='driver',
         nullable=False)
     id_number = Column(String(20), unique=True, nullable=True)
     dob = Column(DateTime, nullable=True)
@@ -71,6 +72,7 @@ class Vehicle(Base, TimestampMixin):
             'in garage',
             'stalled',
             name='vehicle_statuses'),
+        default='on road',
         nullable=False)
 
     location = relationship("Location", back_populates="vehicles")
@@ -82,7 +84,7 @@ class Vehicle(Base, TimestampMixin):
 
 class Location(Base, TimestampMixin):
     __tablename__ = 'locations'
-    name = Column(String(50), nullable=False)
+    name = Column(String(50), nullable=False, unique=True)
     address = Column(String(100), nullable=True)
 
     users = relationship("User", back_populates="location")
@@ -100,7 +102,8 @@ class VehicleDriver(Base, TimestampMixin):
     __tablename__ = 'vehicle_drivers'
     user_id = Column(Integer, ForeignKey('users.id'))
     vehicle_id = Column(Integer, ForeignKey('vehicles.id'))
-    start_date = Column(DateTime, nullable=False)
+    start_date = Column(DateTime, default=datetime.now(
+        timezone.utc), nullable=False)
     end_date = Column(DateTime, nullable=True)
 
     user = relationship("User", back_populates="vehicles")
