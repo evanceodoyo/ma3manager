@@ -64,4 +64,5 @@ def delete_remittance(remittance_id: int, db: Session = Depends(get_db)):
         db, remittance_id=remittance_id)
     if db_remittance is None:
         raise HTTPException(status_code=404, detail="Remittance not found")
-    return crud_remittance.delete_remittance(db=db, remittance_id=remittance_id)
+    return crud_remittance.delete_remittance(
+        db=db, remittance_id=remittance_id)
