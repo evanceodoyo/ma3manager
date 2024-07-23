@@ -1,4 +1,12 @@
-from sqlalchemy import Column, Integer, String, Float, Date, Enum, ForeignKey
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Float,
+    DateTime,
+    Enum,
+    ForeignKey
+)
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
 
@@ -8,10 +16,10 @@ from app.core.database import Base
 class TimestampMixin:
     id = Column(Integer, primary_key=True, index=True)
     created_at = Column(
-        Date, default=datetime.now(
+        DateTime, default=datetime.now(
             timezone.utc), nullable=False)
     updated_at = Column(
-        Date,
+        DateTime,
         default=datetime.now(timezone.utc),
         onupdate=datetime.now(timezone.utc),
         nullable=False)
@@ -30,7 +38,7 @@ class User(Base, TimestampMixin):
             name='user_roles'),
         nullable=False)
     id_number = Column(String(20), unique=True, nullable=False)
-    dob = Column(Date, nullable=True)
+    dob = Column(DateTime, nullable=True)
     phone_number = Column(String(15), nullable=True)
     driving_license_number = Column(String(20), nullable=True)
     location_id = Column(
@@ -92,8 +100,8 @@ class VehicleDriver(Base, TimestampMixin):
     __tablename__ = 'vehicle_drivers'
     user_id = Column(Integer, ForeignKey('users.id'))
     vehicle_id = Column(Integer, ForeignKey('vehicles.id'))
-    start_date = Column(Date, nullable=False)
-    end_date = Column(Date, nullable=True)
+    start_date = Column(DateTime, nullable=False)
+    end_date = Column(DateTime, nullable=True)
 
     user = relationship("User", back_populates="vehicles")
     vehicle = relationship("Vehicle", back_populates="drivers")
@@ -104,7 +112,9 @@ class Maintenance(Base, TimestampMixin):
     vehicle_id = Column(Integer, ForeignKey('vehicles.id'))
     cost = Column(Float, nullable=False)
     description = Column(String(255), nullable=False)
-    date = Column(Date, nullable=False)
+    done_at = Column(
+        DateTime, default=datetime.now(
+            timezone.utc), nullable=False)
 
     vehicle = relationship("Vehicle", back_populates="maintenances")
 
@@ -113,7 +123,9 @@ class Remittance(Base, TimestampMixin):
     __tablename__ = 'remittances'
     vehicle_id = Column(Integer, ForeignKey('vehicles.id'))
     amount = Column(Float, nullable=False)
-    date = Column(Date, nullable=False)
+    remitted_at = Column(
+        DateTime, default=datetime.now(
+            timezone.utc), nullable=False)
 
     vehicle = relationship("Vehicle", back_populates="remittances")
 
@@ -122,7 +134,7 @@ class VehicleRoute(Base, TimestampMixin):
     __tablename__ = 'vehicle_routes'
     vehicle_id = Column(Integer, ForeignKey('vehicles.id'))
     route_id = Column(Integer, ForeignKey('routes.id'))
-    date_assigned = Column(Date, nullable=False)
+    date_assigned = Column(DateTime, nullable=False)
 
     vehicle = relationship("Vehicle", back_populates="routes")
     route = relationship("Route", back_populates="vehicles")
