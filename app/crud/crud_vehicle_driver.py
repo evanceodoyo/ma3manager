@@ -1,10 +1,13 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from app.models import VehicleDriver
 from app.schemas import VehicleDriverCreate, VehicleDriverUpdate
 
 
 def get_vehicle_driver(db: Session, vehicle_driver_id: int):
-    return db.query(VehicleDriver).filter(
+    return db.query(VehicleDriver).options(
+        joinedload(
+            VehicleDriver.vehicle), joinedload(
+            VehicleDriver.user)).filter(
         VehicleDriver.id == vehicle_driver_id).first()
 
 

@@ -1,10 +1,13 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from app.models import Remittance
 from app.schemas import RemittanceCreate, RemittanceUpdate
 
 
 def get_remittance(db: Session, remittance_id: int):
-    return db.query(Remittance).filter(Remittance.id == remittance_id).first()
+    return db.query(Remittance).options(
+        joinedload(
+            Remittance.vehicle)).filter(
+        Remittance.id == remittance_id).first()
 
 
 def get_remittances(db: Session, skip: int = 0, limit: int = 10):

@@ -1,10 +1,11 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from app.models import Vehicle
 from app.schemas import VehicleCreate, VehicleUpdate
 
 
 def get_vehicle(db: Session, vehicle_id: int):
-    return db.query(Vehicle).filter(Vehicle.id == vehicle_id).first()
+    return db.query(Vehicle).options(joinedload(Vehicle.location)).filter(
+        Vehicle.id == vehicle_id).first()
 
 
 def get_vehicles(db: Session, skip: int = 0, limit: int = 10):

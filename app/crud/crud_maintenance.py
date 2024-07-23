@@ -1,10 +1,12 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from app.models import Maintenance
 from app.schemas import MaintenanceCreate, MaintenanceUpdate
 
 
 def get_maintenance(db: Session, maintenance_id: int):
-    return db.query(Maintenance).filter(
+    return db.query(Maintenance).options(
+        joinedload(
+            Maintenance.vehicle)).filter(
         Maintenance.id == maintenance_id).first()
 
 
